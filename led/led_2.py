@@ -26,11 +26,9 @@ while True:
     operacja = input("Czynność: ")
     if operacja == ("Y" or "y"):
         GPIO.output(pin, GPIO.HIGH)
-        print("1")
         continue
     elif operacja == ("N" or "n"):
         GPIO.output(pin, GPIO.LOW)
-        print("2")
         continue
     elif operacja == ("Q" or "q"):
         GPIO.cleanup()
