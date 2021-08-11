@@ -10,4 +10,5 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 #Definiujemy pod, który pin GPIO podłączona jest dioda
 pin = 5
+#Podajemy stan wysoki na wcześniej zdefiniowany pin
 GPIO.output(pin, GPIO.HIGH)
