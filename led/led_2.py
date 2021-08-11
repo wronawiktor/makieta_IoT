@@ -2,7 +2,7 @@
 """
 Plik do sterowania diodą podłączoną do wybranego GPIO
 """
-# Pobranie biblioteki do sterowania GPIO
+# Pobranie biblioteki do sterowania GPIO oraz sys
 import RPi.GPIO as GPIO
 import sys
 
@@ -12,7 +12,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 # Definiujemy pod, który pin GPIO podłączona jest dioda
-pin = int(input("Podaj port GPIO pod który podłączona jest dioda (domyślnie: 5)"))
+pin = int(input("Podaj port GPIO pod który podłączona jest dioda (domyślnie: 5): "))
 
 # Podajemy zgodnie z preferencją użytkownika na wcześniej zdefiniowany pin
 print("""
@@ -22,16 +22,21 @@ Wybierz czynność:
 - Q - Wyjdź z programu
 """)
 while True:
-    operacja = input("Czynność:")
-    if operacja == "Y":
+    print()
+    operacja = input("Czynność: ")
+    if operacja == ("Y" or "y"):
         GPIO.output(pin, GPIO.HIGH)
-    elif operacja == "N":
+        print("1")
+        continue
+    elif operacja == ("N" or "n"):
         GPIO.output(pin, GPIO.LOW)
-    elif operacja == "Q":
+        print("2")
+        continue
+    elif operacja == ("Q" or "q"):
         GPIO.cleanup()
         break
     else:
-        input("Błędna komenda! Wybierz jeszcze raz! (Naciśnij, aby kontynuować)")
+        input("Błędna komenda! Wybierz jeszcze raz! (Naciśnij, aby kontynuować): ")
         # Czekaj na reakcję użytkownika
         continue
 
