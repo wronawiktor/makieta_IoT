@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 Plik do sterowania diodą podłączoną do wybranego GPIO
 """
 # Pobranie biblioteki do sterowania GPIO
 import RPi.GPIO as GPIO
+import sys
 
 # Używamy numeracji GPIO, a nie fizycznych pinów
 GPIO.setmode(GPIO.BCM)
