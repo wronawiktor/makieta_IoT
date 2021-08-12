@@ -25,7 +25,9 @@ GPIO.setmode(GPIO.BCM)
 # Wyłączenie ostrzeżeń, które mogłby pojawić się przy ponownym otwieraniu pliku bez czyszczenia GPIO
 GPIO.setwarnings(False)
 # Definiujemy pod, który GPIO podłączona jest dioda
-PIN = int(input("Podaj port GPIO pod który podłączona jest dioda (domyślnie: 5): "))
+PIN = int(input("Podaj port GPIO pod który podłączona jest dioda (domyślnie: 6): "))
+if PIN == "":
+    PIN = 6
 # Użycie u jako wyjściowy
 GPIO.setup(PIN, GPIO.OUT)
 # Podajemy zgodnie z preferencją użytkownika na wcześniej zdefiniowany PIN
