@@ -15,9 +15,10 @@
 
 #Pobranie biblioteki do sterowania GPIO
 import RPi.GPIO as GPIO
+import time
 
 #Definiujemy PIN GPIO do ktorego podlaczona jest dioda
-PIN =5
+PIN = 5
 
 print("Enable LED connected to PIN ", PIN)
 
@@ -31,5 +32,7 @@ GPIO.setup(PIN, GPIO.OUT)
 
 #Podajemy stan wysoki na wczesniej zdefiniowany pin
 GPIO.output(PIN, GPIO.HIGH)
+
+time.sleep(10)
 
 GPIO.cleanup(PIN)
