@@ -41,9 +41,6 @@ while True:
     else:
         break
 
-
-
-
 # Użycie u jako wyjściowy
 GPIO.setup(PIN, GPIO.OUT)
 # Podajemy okres jednego mignięcia zgodnie z preferencją użytkownika
