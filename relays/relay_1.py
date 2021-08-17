@@ -17,9 +17,10 @@
 import RPi.GPIO as GPIO
 import time
 import relay_control
-from led import led_control
+import sys
+sys.path.insert(1, '/home/pi/makieta_IoT/led')
+import led_control
 import os
-
 
 def import_pin_num(relay, default_pin):
     while True:
@@ -43,10 +44,13 @@ S1 = 21
 S2 = 20
 D1 = 6
 D2 = 5
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(S1, GPIO.IN)
+GPIO.setup(S2, GPIO.IN)
 
 while True:
     while (GPIO.input(S1) == GPIO.LOW and GPIO.input(S2) == GPIO.LOW):
-        os.system('cls')
+        os.system('clear')
         print("""
         ================
         Menu
@@ -54,11 +58,12 @@ while True:
         2. Wyłącz przekaźnik nr. 1
         3. Włącz przekaźnik nr. 2
         4. Wyłącz przekaźnik nr. 2
+        5. Wyłącz program
         ================""")
         while True:
             try:
                 action = int(input("Akcja: "))
-                if action not in range(1, 5):
+                if action not in range(1, 6):
                     raise IndexError
                 else:
                     break
@@ -81,21 +86,29 @@ while True:
 
         elif action == 4:
             relay_control.off(R2)
-            led_control.on(D2)
+            led_control.off(D2)
 
-        os.system('cls')
+        elif action == 5:
+            relay_control.off(R1)
+            led_control.off(D1)
+            relay_control.off(R2)
+            led_control.off(D2)
+            GPIO.cleanup()
+            sys.exit(0)
+
+        os.system('clear')
         print("Akcja nr:{} przeprowadzona pomyślnie! ".format(action))
         input("Nacisnij, aby kontynuować")
 
     if GPIO.input(S1) == GPIO.HIGH:
-        os.system('cls')
+        os.system('clear')
         print("Alarm przekaźnika 1")
         relay_control.off(R1)
         led_control.blink(D1, 1)
         GPIO.wait_for_edge(S1, GPIO.RISING)
 
     elif GPIO.input(S2) == GPIO.HIGH:
-        os.system('cls')
+        os.system('clear')
         print("Alarm przekaźnika 2")
         relay_control.off(R1)
         led_control.blink(D1, 1)
