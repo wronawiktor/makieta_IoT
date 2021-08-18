@@ -16,16 +16,17 @@
 
 import RPi.GPIO as GPIO
 import time
-import relay_control
 import sys
 sys.path.insert(1, '/home/pi/makieta_IoT/led')
+sys.path.insert(1, '/home/pi/makieta_IoT/relays')
+import relay_control
 import led_control
 import os
 
 def import_pin_num(relay, default_pin):
     while True:
         try:
-            pin = input("Podaj port GPIO pod który podłączony jest przekaźnik nr {} (domyślnie: {}): ".format(relay, default_pin))
+            pin = input("Enter GPIO port where the relay no.{} is connected (by default: {}): ".format(relay, default_pin))
             if len(pin) == 0:
                 pin = default_pin
                 break
@@ -33,7 +34,7 @@ def import_pin_num(relay, default_pin):
                 pin = int(pin)
                 break
         except ValueError:
-            print("Podaj poprawną liczbę!")
+            print("Please enter correct number! ")
     return(pin)
 
 
@@ -54,23 +55,23 @@ while True:
         print("""
         ================
         Menu
-        1. Włącz przekaźnik nr. 1
-        2. Wyłącz przekaźnik nr. 1
-        3. Włącz przekaźnik nr. 2
-        4. Wyłącz przekaźnik nr. 2
-        5. Wyłącz program
+        1. Switch on relay no. 1 
+        2. Turn off relay no. 1 
+        3. Switch on relay no. 2
+        4. Turn off relay no. 2
+        5. Turn off the program 
         ================""")
         while True:
             try:
-                action = int(input("Akcja: "))
+                action = int(input("Action: "))
                 if action not in range(1, 6):
                     raise IndexError
                 else:
                     break
             except ValueError:
-                print("Podaj poprawną liczbę! ")
+                print("Please enter correct number! ")
             except IndexError:
-                print("Podaj liczbę mieszczącą się w zakresie! ")
+                print("Please enter a number within the range! ")
 
         if action == 1:
             relay_control.on(R1)
@@ -97,19 +98,19 @@ while True:
             sys.exit(0)
 
         os.system('clear')
-        print("Akcja nr:{} przeprowadzona pomyślnie! ".format(action))
-        input("Nacisnij, aby kontynuować")
+        print("Action no.:{} carried out successfully! ".format(action))
+        input("Press, to continue")
 
     if GPIO.input(S1) == GPIO.HIGH:
         os.system('clear')
-        print("Alarm przekaźnika 1")
+        print("Relay 1 alarm")
         relay_control.off(R1)
         led_control.blink(D1, 1)
         GPIO.wait_for_edge(S1, GPIO.RISING)
 
     elif GPIO.input(S2) == GPIO.HIGH:
         os.system('clear')
-        print("Alarm przekaźnika 2")
+        print("Relay 2 alarm")
         relay_control.off(R1)
         led_control.blink(D1, 1)
         GPIO.wait_for_edge(S2, GPIO.RISING)
