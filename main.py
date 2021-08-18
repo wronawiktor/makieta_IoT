@@ -38,6 +38,22 @@ def import_pin_num(relay, default_pin):
     return(pin)
 
 
+def my_callback_one(S1):
+    os.system('clear')
+    print("Relay 1 alarm")
+    relay_control.off(R1)
+    led_control.blink(D1, 1)
+    GPIO.wait_for_edge(S1, GPIO.RISING)
+
+
+def my_callback_two(S2):
+    os.system('clear')
+    print("Relay 2 alarm")
+    relay_control.off(R1)
+    led_control.blink(D1, 1)
+    GPIO.wait_for_edge(S2, GPIO.RISING)
+
+
 # Pin definition of where relays, switches and diodes are connected
 R1 = import_pin_num(1, 26)
 R2 = import_pin_num(2, 19)
@@ -46,8 +62,8 @@ S2 = 20
 D1 = 6
 D2 = 5
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(S1, GPIO.IN)
-GPIO.setup(S2, GPIO.IN)
+GPIO.setup(S1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(S2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 while True:
     while (GPIO.input(S1) == GPIO.LOW and GPIO.input(S2) == GPIO.LOW):
@@ -101,16 +117,6 @@ while True:
         print("Action no.:{} carried out successfully! ".format(action))
         input("Press, to continue")
 
-    if GPIO.input(S1) == GPIO.HIGH:
-        os.system('clear')
-        print("Relay 1 alarm")
-        relay_control.off(R1)
-        led_control.blink(D1, 1)
-        GPIO.wait_for_edge(S1, GPIO.RISING)
-
-    elif GPIO.input(S2) == GPIO.HIGH:
-        os.system('clear')
-        print("Relay 2 alarm")
-        relay_control.off(R1)
-        led_control.blink(D1, 1)
-        GPIO.wait_for_edge(S2, GPIO.RISING)
+    # clean up GPIO on CTRL+C exit
+    except KeyboardInterrupt:\
+        GPIO.cleanup()
