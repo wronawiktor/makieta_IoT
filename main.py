@@ -17,6 +17,7 @@
 import RPi.GPIO as GPIO
 import time
 import sys
+import subprocess
 sys.path.insert(1, '/home/pi/makieta_IoT/led')
 sys.path.insert(1, '/home/pi/makieta_IoT/relays')
 import relay_control
@@ -38,22 +39,6 @@ def import_pin_num(relay, default_pin):
     return(pin)
 
 
-def my_callback_one(S1):
-    os.system('clear')
-    print("Relay 1 alarm")
-    relay_control.off(R1)
-    led_control.blink(D1, 1)
-    GPIO.wait_for_edge(S1, GPIO.RISING)
-
-
-def my_callback_two(S2):
-    os.system('clear')
-    print("Relay 2 alarm")
-    relay_control.off(R1)
-    led_control.blink(D1, 1)
-    GPIO.wait_for_edge(S2, GPIO.RISING)
-
-
 # Pin definition of where relays, switches and diodes are connected
 R1 = import_pin_num(1, 26)
 R2 = import_pin_num(2, 19)
@@ -64,9 +49,37 @@ D2 = 5
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(S1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(S2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+lock_R1 = 0
+lock_R2 = 0
 
-while True:
-    while (GPIO.input(S1) == GPIO.LOW and GPIO.input(S2) == GPIO.LOW):
+
+def my_callback_one(S1):
+    lock_R1 = 1
+    os.system('clear')
+    print("Relay 1 alarm")
+    relay_control.off(R1)
+    blink1 = subprocess.Popen([led_control.blink(D1, 0.5)])
+    while GPIO.input(S1) == GPIO.LOW:
+        time.sleep(0.01)
+    while GPIO.input(S1) == GPIO.HIGH:
+        time.sleep(0.01)
+    blink1.kill()
+    lock_R1 = 0
+
+
+def my_callback_two(S2):
+    os.system('clear')
+    print("Relay 2 alarm")
+    relay_control.off(R2)
+    led_control.blink(D2, 1)
+    GPIO.wait_for_edge(S2, GPIO.RISING)
+
+
+GPIO.add_event_detect(S1, GPIO.RISING, callback=my_callback_one)
+GPIO.add_event_detect(S2, GPIO.RISING, callback=my_callback_two)
+
+if __name__ == '__main__':
+    while True:
         os.system('clear')
         print("""
         ================
@@ -90,8 +103,11 @@ while True:
                 print("Please enter a number within the range! ")
 
         if action == 1:
-            relay_control.on(R1)
-            led_control.on(D1)
+            if lock_R1 == 0:
+                relay_control.on(R1)
+                led_control.on(D1)
+            else:
+                print("Cannot turn on relay! Lock is on.")
 
         elif action == 2:
             relay_control.off(R1)
@@ -114,9 +130,5 @@ while True:
             sys.exit(0)
 
         os.system('clear')
-        print("Action no.:{} carried out successfully! ".format(action))
+        # print("Action no.:{} carried out successfully! ".format(action))
         input("Press, to continue")
-
-    # clean up GPIO on CTRL+C exit
-    except KeyboardInterrupt:\
-        GPIO.cleanup()
