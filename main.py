@@ -17,12 +17,13 @@
 import RPi.GPIO as GPIO
 import time
 import sys
-import subprocess
+import multiprocessing
 sys.path.insert(1, '/home/pi/makieta_IoT/led')
 sys.path.insert(1, '/home/pi/makieta_IoT/relays')
 import relay_control
 import led_control
 import os
+
 
 def import_pin_num(relay, default_pin):
     while True:
@@ -47,38 +48,59 @@ S2 = 20
 D1 = 6
 D2 = 5
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 GPIO.setup(S1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(S2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-lock_R1 = 0
-lock_R2 = 0
+button_pressed = False
+button_pressed_2 = False
 
 
 def my_callback_one(S1):
-    lock_R1 = 1
-    os.system('clear')
-    print("Relay 1 alarm")
-    relay_control.off(R1)
-    blink1 = subprocess.Popen([led_control.blink(D1, 0.5)])
-    while GPIO.input(S1) == GPIO.LOW:
-        time.sleep(0.01)
-    while GPIO.input(S1) == GPIO.HIGH:
-        time.sleep(0.01)
-    blink1.kill()
-    lock_R1 = 0
+    global button_pressed
+    button_pressed = not button_pressed
+    if button_pressed:
+        global blink1
+        os.system('clear')
+        print("Relay 1 alarm")
+        relay_control.off(R1)
+        GPIO.cleanup(R1)
+        blink1 = multiprocessing.Process(target=led_control.blink, args=(D1, 0.5))
+        blink1.daemon = True
+        blink1.start()
+    else:
+        os.system('clear')
+        blink1.terminate()
+        GPIO.cleanup(D1)
+        print("Relay 1 alarm - disabled")
+    time.sleep(0.01)
 
 
 def my_callback_two(S2):
-    os.system('clear')
-    print("Relay 2 alarm")
-    relay_control.off(R2)
-    led_control.blink(D2, 1)
-    GPIO.wait_for_edge(S2, GPIO.RISING)
+    global button_pressed_2
+    button_pressed_2 = not button_pressed_2
+    if button_pressed_2:
+        global blink2
+        os.system('clear')
+        print("Relay 2 alarm")
+        relay_control.off(R2)
+        GPIO.cleanup(R2)
+        blink2 = multiprocessing.Process(target=led_control.blink, args=(D2, 0.5))
+        blink2.daemon = True
+        blink2.start()
+    else:
+        os.system('clear')
+        blink2.terminate()
+        GPIO.cleanup(D2)
+        print("Relay 2 alarm - disabled")
+    time.sleep(0.01)
 
 
-GPIO.add_event_detect(S1, GPIO.RISING, callback=my_callback_one)
-GPIO.add_event_detect(S2, GPIO.RISING, callback=my_callback_two)
+GPIO.add_event_detect(S1, GPIO.RISING, callback=my_callback_one, bouncetime=800)
+GPIO.add_event_detect(S2, GPIO.RISING, callback=my_callback_two, bouncetime=800)
+
 
 if __name__ == '__main__':
+
     while True:
         os.system('clear')
         print("""
@@ -103,19 +125,22 @@ if __name__ == '__main__':
                 print("Please enter a number within the range! ")
 
         if action == 1:
-            if lock_R1 == 0:
+            if not button_pressed:
                 relay_control.on(R1)
                 led_control.on(D1)
             else:
-                print("Cannot turn on relay! Lock is on.")
+                print("Cannot turn on relay! Lock is on. Press S1 to unlock.")
 
         elif action == 2:
             relay_control.off(R1)
             led_control.off(D1)
 
         elif action == 3:
-            relay_control.on(R2)
-            led_control.on(D2)
+            if not button_pressed_2:
+                relay_control.on(R2)
+                led_control.on(D2)
+            else:
+                print("Cannot turn on relay! Lock is on. Press S2 to unlock.")
 
         elif action == 4:
             relay_control.off(R2)
@@ -129,6 +154,6 @@ if __name__ == '__main__':
             GPIO.cleanup()
             sys.exit(0)
 
-        os.system('clear')
         # print("Action no.:{} carried out successfully! ".format(action))
-        input("Press, to continue")
+        input("Press, to continue\n")
+        os.system('clear')
