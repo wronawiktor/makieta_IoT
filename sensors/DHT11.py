@@ -19,12 +19,12 @@ import board
 import adafruit_dht
 
 # Initial the dht device, with data pin connected to:
-# dhtDevice = adafruit_dht.DHT22(board.D4)
+dhtDevice = adafruit_dht.DHT11(board.D13)
 
 # you can pass DHT22 use_pulseio=False if you wouldn't like to use pulseio.
 # This may be necessary on a Linux single board computer like the Raspberry Pi,
 # but it will not work in CircuitPython.
-dhtDevice = adafruit_dht.DHT11(board.D13, use_pulseio=False)
+# dhtDevice = adafruit_dht.DHT11(board.D13, use_pulseio=False)
 
 while True:
     try:
