@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import threading
 import RPi.GPIO as GPIO
 import time
 import sys
@@ -22,7 +24,7 @@ sys.path.insert(1, '/home/pi/makieta_IoT/led')
 sys.path.insert(1, '/home/pi/makieta_IoT/relays')
 import relay_control
 import led_control
-import os
+
 
 
 def import_pin_num(relay, default_pin):
