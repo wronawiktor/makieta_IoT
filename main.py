@@ -15,7 +15,6 @@
 # limitations under the License.
 
 import os
-import threading
 import RPi.GPIO as GPIO
 import time
 import sys
