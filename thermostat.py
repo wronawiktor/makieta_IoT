@@ -20,9 +20,10 @@ from lcd import drivers
 import os
 from led import led_control
 from relays import relay_control
-from sensors import DHT11_simple
 from time import sleep
 import RPi.GPIO as GPIO
+import sys
+import Adafruit_DHT
 
 # Choose unit
 while True:
@@ -44,30 +45,26 @@ while True:
         print("Please enter a number within the range! ")
 
 print("Unit set to {}".format(unit))
-sleep(0.5)
+sleep(1)
 os.system('clear')
 
 # Enter max temperature
 while True:
     try:
-        T_max = input("Enter max temperature in {} degrees : ".format(unit))
-        if len(T_max) == 0:
-            print("Please enter something")
-            continue
-        else:
-            break
+        T_max = int(input("Enter max temperature in {} degrees : ".format(unit)))
+        break
 
     except ValueError:
         print("Enter correct number!")
 
 print("Max temperature set to {}".format(T_max))
-sleep(0.5)
+sleep(1)
 os.system('clear')
 
 # Enter min temperature
 while True:
     try:
-        T_min = input("Enter minimal temperature in {} degrees : ".format(unit))
+        T_min = int(input("Enter minimal temperature in {} degrees : ".format(unit)))
         if T_min >= T_max:
             print("Minimal temperature cannot be higher or equal to max temperature!")
             print("Please enter temperature lower than: {} {} degrees.".format(T_max, unit))
@@ -79,7 +76,7 @@ while True:
         print("Please enter number!")
 
 print("Min temperature set to {}".format(T_min))
-sleep(0.5)
+sleep(1)
 os.system('clear')
 
 # Config
@@ -89,29 +86,32 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 display = drivers.Lcd()
 
+print("T_min: {}".format(T_min))
+print("T_max: {}".format(T_max))
+print("Program running...")
+
 
 if __name__ == '__main__':
+    led_control.off(D1)
+    relay_control.off(R1)
+    display.lcd_display_string("Relay = OFF", 2)
     try:
         while True:
 
             if unit == "Celcius":
-                temperature = DHT11_simple.temp("C")
+                humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 13)
             elif unit == "Farenheit":
-                temperature = DHT11_simple.temp("F")
+                humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 13)
+                temperature = temperature * (9 / 5) + 32
 
             display.lcd_display_string("Temp = {}".format(temperature), 1)
 
             if temperature <= T_min:
                 led_control.on(D1)
                 relay_control.on(R1)
-                display.lcd_display_string("Relay = ON", 2)
+                display.lcd_display_string("Relay = ON ", 2)
 
             elif temperature >= T_max:
-                led_control.off(D1)
-                relay_control.off(R1)
-                display.lcd_display_string("Relay = OFF", 2)
-
-            else:
                 led_control.off(D1)
                 relay_control.off(R1)
                 display.lcd_display_string("Relay = OFF", 2)
