@@ -100,11 +100,13 @@ if __name__ == '__main__':
 
             if unit == "Celcius":
                 humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 13)
+                unit_letter = "C"
             elif unit == "Farenheit":
                 humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 13)
                 temperature = temperature * (9 / 5) + 32
+                unit_letter = "F"
 
-            display.lcd_display_string("Temp = {}".format(temperature), 1)
+            display.lcd_display_string("Temp = {} {} ".format(temperature, unit_letter), 1)
 
             if temperature <= T_min:
                 led_control.on(D1)
