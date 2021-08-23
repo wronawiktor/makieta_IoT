@@ -59,6 +59,7 @@ if __name__ == '__main__':
         print("Unit set to {}".format(unit))
         sleep(1)
         os.system('clear')
+        return unit
 
 
     def max_temp():
@@ -75,6 +76,7 @@ if __name__ == '__main__':
         print("Max temperature set to {}".format(T_max))
         sleep(1)
         os.system('clear')
+        return T_max
 
 
     def min_temp():
@@ -96,11 +98,12 @@ if __name__ == '__main__':
         print("Min temperature set to {}".format(T_min))
         sleep(1)
         os.system('clear')
+        return T_min
 
 
-    choose_unit()
-    max_temp()
-    min_temp()
+    unit = choose_unit()
+    T_max = max_temp()
+    T_min = min_temp()
 
     print("T_min: {}".format(T_min))
     print("T_max: {}".format(T_max))
