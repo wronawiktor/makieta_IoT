@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (c) 2021 Wiktor Wrona Company
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import RPi.GPIO as GPIO
-import time
-import sys
 import multiprocessing
-sys.path.insert(1, '/home/pi/makieta_IoT/led')
-sys.path.insert(1, '/home/pi/makieta_IoT/relays')
-import relay_control
-import led_control
+import os
+import sys
+import time
 
+import RPi.GPIO as GPIO
+
+from relays import led_control
+from led import relay_control
+from relays import led_control
+
+
+# Pin definition of where relays, switches and diodes are connected
+R1 = import_pin_num(1, 26)
+R2 = import_pin_num(2, 19)
+S1 = 21
+S2 = 20
+D1 = 6
+D2 = 5
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(S1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(S2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
 def import_pin_num(relay, default_pin):
@@ -41,22 +53,9 @@ def import_pin_num(relay, default_pin):
     return(pin)
 
 
-# Pin definition of where relays, switches and diodes are connected
-R1 = import_pin_num(1, 26)
-R2 = import_pin_num(2, 19)
-S1 = 21
-S2 = 20
-D1 = 6
-D2 = 5
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-GPIO.setup(S1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(S2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-button_pressed = False
-button_pressed_2 = False
-
-
 def my_callback_one(S1):
+    button_pressed = False
+
     global button_pressed
     button_pressed = not button_pressed
     if button_pressed:
@@ -77,6 +76,8 @@ def my_callback_one(S1):
 
 
 def my_callback_two(S2):
+    button_pressed_2 = False
+    
     global button_pressed_2
     button_pressed_2 = not button_pressed_2
     if button_pressed_2:
@@ -101,7 +102,7 @@ GPIO.add_event_detect(S2, GPIO.RISING, callback=my_callback_two, bouncetime=800)
 
 
 if __name__ == '__main__':
-
+    
     while True:
         os.system('clear')
         print("""
@@ -113,6 +114,7 @@ if __name__ == '__main__':
         4. Turn off relay no. 2
         5. Turn off the program 
         ================""")
+        
         while True:
             try:
                 action = int(input("Action: "))
@@ -131,22 +133,18 @@ if __name__ == '__main__':
                 led_control.on(D1)
             else:
                 print("Cannot turn on relay! Lock is on. Press S1 to unlock.")
-
         elif action == 2:
             relay_control.off(R1)
             led_control.off(D1)
-
         elif action == 3:
             if not button_pressed_2:
                 relay_control.on(R2)
                 led_control.on(D2)
             else:
                 print("Cannot turn on relay! Lock is on. Press S2 to unlock.")
-
         elif action == 4:
             relay_control.off(R2)
             led_control.off(D2)
-
         elif action == 5:
             relay_control.off(R1)
             led_control.off(D1)
