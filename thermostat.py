@@ -16,82 +16,88 @@
 File to control the relay depending on the temperature
 """
 
-from lcd import drivers
+import Adafruit_DHT
 import os
+import sys
+from time import sleep
+
+import RPi.GPIO as GPIO
+
 from led import led_control
+from lcd import drivers
 from relays import relay_control
 from time import sleep
-import RPi.GPIO as GPIO
-import sys
-import Adafruit_DHT
 
-# Choose unit
-while True:
-    try:
-        unit = int(input("Enter unit used in program: 1. Celcius, 2. Farenheit :"))
-        if unit not in range(1, 3):
-            raise IndexError
-        else:
-            if unit == 1:
-                unit = "Celcius"
-                break
-            elif unit == 2:
-                unit = "Farenheit"
-                break
-
-    except ValueError:
-        print("Please enter number!")
-    except IndexError:
-        print("Please enter a number within the range! ")
-
-print("Unit set to {}".format(unit))
-sleep(1)
-os.system('clear')
-
-# Enter max temperature
-while True:
-    try:
-        T_max = int(input("Enter max temperature in {} degrees : ".format(unit)))
-        break
-
-    except ValueError:
-        print("Enter correct number!")
-
-print("Max temperature set to {}".format(T_max))
-sleep(1)
-os.system('clear')
-
-# Enter min temperature
-while True:
-    try:
-        T_min = int(input("Enter minimal temperature in {} degrees : ".format(unit)))
-        if T_min >= T_max:
-            print("Minimal temperature cannot be higher or equal to max temperature!")
-            print("Please enter temperature lower than: {} {} degrees.".format(T_max, unit))
-            continue
-        else:
-            break
-
-    except ValueError:
-        print("Please enter number!")
-
-print("Min temperature set to {}".format(T_min))
-sleep(1)
-os.system('clear')
 
 # Config
 D1 = 6
 R1 = 26
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-display = drivers.Lcd()
-
-print("T_min: {}".format(T_min))
-print("T_max: {}".format(T_max))
-print("Program running...")
 
 
 if __name__ == '__main__':
+
+    # Choose unit
+    while True:
+        try:
+            unit = int(input("Enter unit used in program: 1. Celcius, 2. Farenheit :"))
+            if unit not in range(1, 3):
+              raise IndexError
+            else:
+                if unit == 1:
+                    unit = "Celcius"
+                    break
+                elif unit == 2:
+                    unit = "Farenheit"
+                    break
+
+          except ValueError:
+              print("Please enter number!")
+          except IndexError:
+              print("Please enter a number within the range! ")
+
+    print("Unit set to {}".format(unit))
+    sleep(1)
+    os.system('clear')
+
+    # Enter max temperature
+    while True:
+        try:
+            T_max = int(input("Enter max temperature in {} degrees : ".format(unit)))
+            break
+
+        except ValueError:
+            print("Enter correct number!")
+
+    print("Max temperature set to {}".format(T_max))
+    sleep(1)
+    os.system('clear')
+
+    # Enter min temperature
+    while True:
+        try:
+            T_min = int(input("Enter minimal temperature in {} degrees : ".format(unit)))
+            if T_min >= T_max:
+                print("Minimal temperature cannot be higher or equal to max temperature!")
+                print("Please enter temperature lower than: {} {} degrees.".format(T_max, unit))
+                continue
+            else:
+                break
+
+        except ValueError:
+            print("Please enter number!")
+
+    print("Min temperature set to {}".format(T_min))
+    sleep(1)
+    os.system('clear')
+
+    display = drivers.Lcd()
+
+    print("T_min: {}".format(T_min))
+    print("T_max: {}".format(T_max))
+    print("Program running...")
+
     led_control.off(D1)
     relay_control.off(R1)
     display.lcd_display_string("Relay = OFF", 2)
