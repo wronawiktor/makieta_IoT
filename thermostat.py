@@ -51,9 +51,9 @@ if __name__ == '__main__':
                         unit = "Farenheit"
                         break
 
-              except ValueError:
+            except ValueError:
                   print("Please enter number!")
-              except IndexError:
+            except IndexError:
                   print("Please enter a number within the range! ")
 
         print("Unit set to {}".format(unit))

@@ -20,14 +20,12 @@ import time
 
 import RPi.GPIO as GPIO
 
-from relays import led_control
-from led import relay_control
-from relays import led_control
+from led import led_control
+from relays import relay_control
 
 
 # Pin definition of where relays, switches and diodes are connected
-R1 = import_pin_num(1, 26)
-R2 = import_pin_num(2, 19)
+
 S1 = 21
 S2 = 20
 D1 = 6
@@ -36,6 +34,8 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 GPIO.setup(S1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(S2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+button_pressed = False
+button_pressed_2 = False
 
 
 def import_pin_num(relay, default_pin):
@@ -54,8 +54,6 @@ def import_pin_num(relay, default_pin):
 
 
 def my_callback_one(S1):
-    button_pressed = False
-
     global button_pressed
     button_pressed = not button_pressed
     if button_pressed:
@@ -76,9 +74,8 @@ def my_callback_one(S1):
 
 
 def my_callback_two(S2):
-    button_pressed_2 = False
-    
     global button_pressed_2
+
     button_pressed_2 = not button_pressed_2
     if button_pressed_2:
         global blink2
@@ -96,7 +93,8 @@ def my_callback_two(S2):
         print("Relay 2 alarm - disabled")
     time.sleep(0.01)
 
-
+R1 = import_pin_num(1, 26)
+R2 = import_pin_num(2, 19)
 GPIO.add_event_detect(S1, GPIO.RISING, callback=my_callback_one, bouncetime=800)
 GPIO.add_event_detect(S2, GPIO.RISING, callback=my_callback_two, bouncetime=800)
 
