@@ -2,8 +2,11 @@
 from flask import Flask, render_template, request, url_for, redirect
 app = Flask(__name__)
 import sys
-sys.path.insert(1, '/home/pi/makieta_IoT/relays')
-import relay_control
+sys.path.insert(1, '/home/pi/makieta_IoT')
+from relays import relay_control
+from lcd import drivers
+
+
 
 relays = {
    26: {"name": "Relay 1", "state": "off"},
@@ -53,6 +56,20 @@ def action(changePin, action):
 
    return render_template('main.html', **templateData)
    #return redirect(url_for('main', **templateData))
+
+@app.route("/display/<Line1>/<Line2>")
+def display(Line1, Line2):
+   display = drivers.Lcd()
+   display.lcd_clear()
+   '''
+   Line1="No data"
+   if Line1 in request.form:
+      Line1 = request.form["Line1"]
+   '''
+   display.lcd_display_string("{}".format(Line1), 1)
+   display.lcd_display_string("{}".format(Line2), 2)
+
+   return render_template('main.html')
 
 if __name__ == "__main__":
    app.run(host='0.0.0.0', port=5000, debug=True)

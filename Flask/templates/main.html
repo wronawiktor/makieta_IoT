@@ -14,7 +14,7 @@
     <h1>RPi Web Server</h1>
     <p>Relays:</p>
     <div class="row">
-      <div class="col">Relay 1 <input id="chkToggle1" type="checkbox" data-toggle="xtoggle" checked> </div>
+      <div class="col">Relay 1 <input id="chkToggle1" type="checkbox" data-toggle="toggle" checked> </div>
       <div class="col">Relay 2 <input id="chkToggle2" type="checkbox" data-toggle="toggle" checked> </div>
       <div class="w-100"></div>
       <div class="col">Diode 1 <span class="dot_red"></span> </div>
@@ -24,13 +24,14 @@
 
     <p>LCD 2x16:</p>
      <div class="form-group">
-      <label for="usr">Line 1</label>
+      <label for="L1">Line 1</label>
       <input type="text" class="form-control" id="L1">
     </div>
     <div class="form-group">
-      <label for="pwd">Line 2</label>
+      <label for="L2">Line 2</label>
       <input type="text" class="form-control" id="L2">
-      <button class="btn btn-secondary">Send to display</button>
+        <a href="/display/{{L1}}/{{L2}}" class="btn btn-secondary">Send to display</a>
+      <!--<a href="{{ url_for('display', Line1=L1, Line2=L2) }}" class="btn btn-secondary">Send to display</a>-->
     </div>
     <br>
 
