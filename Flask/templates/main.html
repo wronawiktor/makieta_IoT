@@ -14,8 +14,14 @@
     <h1>RPi Web Server</h1>
     <p>Relays:</p>
     <div class="row">
-      <div class="col">Relay 1 <input id="chkToggle1" type="checkbox" data-toggle="toggle" checked> </div>
-      <div class="col">Relay 2 <input id="chkToggle2" type="checkbox" data-toggle="toggle" checked> </div>
+        <form action="ManToggle">
+            <div class="slideThree">
+                <div class="col">Relay 1 <input name="{{Relay_1}}" id="chkToggle1" type="checkbox" data-toggle="toggle" {{Relay_1_status}} > </div>
+                    <label for="Relay_1"></label>
+                <div class="col">Relay 2 <input name="Relay_2" id="chkToggle2" type="checkbox" data-toggle="toggle" > </div>
+                    <label for="Relay_2"></label>
+            </div>
+        </form>
       <div class="w-100"></div>
       <div class="col">Diode 1 <span class="dot_red"></span> </div>
       <div class="col">Diode 2 <span class="dot_green"></span> </div>

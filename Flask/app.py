@@ -9,30 +9,42 @@ from lcd import drivers
 
 
 relays = {
-   26: {"name": "Relay 1", "state": "off"},
-   19: {"name": "Relay 2", "state": "off"}
+   26: {"name": "Relay_1", "state": 0},
+   19: {"name": "Relay_2", "state": 0}
    }
 
 for rel in relays:
    relay_control.off(rel)
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def main():
    # For each pin, read the pin state and store it in the pins dictionary:
+   """
    for relay in relays:
-      if relays[relay]['state'] == "on":
+      if relays[relay]['state'] == True:
          relay_control.on(relay)
       else:
          relay_control.off(relay)
+   """
+   if request.method == 'POST':
+      test = request.form['Relay_1']
+      if test == True:
+         relay_control.on(26)
+      else:
+         relay_control.off(26)
 
    # Put the pin dictionary into the template data dictionary:
    templateData = {
       'relays' : relays
+
       }
    # Pass the template data into the template main.html and return it to the user
-   return render_template('main.html', **templateData)
+   return render_template('main.html', Relay_1=Relay_1)
 
+
+
+"""
 # The function below is executed when someone requests a URL with the pin number and action in it:
 @app.route("/<changePin>/<action>")
 def action(changePin, action):
@@ -56,6 +68,7 @@ def action(changePin, action):
 
    return render_template('main.html', **templateData)
    #return redirect(url_for('main', **templateData))
+"""
 
 @app.route("/display/<Line1>/<Line2>")
 def display(Line1, Line2):
