@@ -20,6 +20,13 @@
   border-radius: 50%;
   display: inline-block;
 }
+ .dot_grey {
+  height: 25px;
+  width: 25px;
+  background-color: #808080;
+  border-radius: 50%;
+  display: inline-block;
+}
 img {
   display: block;
   max-width: 100%;

@@ -12,33 +12,20 @@
 
 <body>
     <h1>RPi Web Server</h1>
+
     <p>Relays:</p>
     <div class="row">
-        Relay 1 ==>  {{ Relay_1  }}  ==>
-			{% if  Relay_1   == 1 %}
-				<a href="/Relay_1/off"class="button">TURN OFF</a>
-			{% else %}
-				<a href="/Relay_1/on" class="button">TURN ON</a>
-			{% endif %}
-		Relay 2 ==>  {{ Relay_2  }}  ==>
-			{% if  Relay_2   == 1 %}
-				<a href="/Relay_2/off"class="button">TURN OFF</a>
-			{% else %}
-				<a href="/Relay_2/on" class="button">TURN ON</a>
-			{% endif %}
-      <div class="w-100"></div>
-      <div class="col">Diode 1
-          {% if  ledRed   == 1 %}
-                <span class="dot_red"></span> </div>
-          {% else %}
-                <span class="dot_grey"></span> </div>
-          {% endif %}
-      <div class="col">Diode 2
-          {% if  ledGrn   == 1 %}
-                <span class="dot_green"></span> </div>
-          {% else %}
-                <span class="dot_grey"></span> </div>
-          {% endif %}
+        <form action="ManToggle">
+            <div class="slideThree">
+                <div class="col">Relay 1 <input name="{{Relay_1}}" id="chkToggle1" type="checkbox" data-toggle="toggle" {{Relay_1_status}} > </div>
+                    <label for="Relay_1"></label>
+                <div class="col">Relay 2 <input name="Relay_2" id="chkToggle2" type="checkbox" data-toggle="toggle" > </div>
+                    <label for="Relay_2"></label>
+            </div>
+        </form>
+        <div class="w-100"></div>
+        <div class="col">Diode 1 <span class="dot_red"></span> </div>
+        <div class="col">Diode 2 <span class="dot_green"></span> </div>
     </div>
     <br>
 
