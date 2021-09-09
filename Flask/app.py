@@ -8,10 +8,29 @@ from relays import relay_control
 from led import led_control
 from lcd import drivers
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
 R1 = 26
 R2 = 19
 Red = 5
 Grn = 6
+
+GPIO.setup(R1, GPIO.OUT)
+GPIO.setup(R2, GPIO.OUT)
+GPIO.setup(Red, GPIO.OUT)
+GPIO.setup(Grn, GPIO.OUT)
+
+R1_Sts = 0
+R2_Sts = 0
+Red_Sts = 0
+Grn_Sts = 0
+
+GPIO.output(R1, GPIO.LOW)
+GPIO.output(R2, GPIO.LOW)
+GPIO.output(Red, GPIO.LOW)
+GPIO.output(Grn, GPIO.LOW)
+
 
 @app.route("/", methods=['GET', 'POST'])
 def main():
@@ -28,7 +47,7 @@ def main():
       'ledRed': Red_Sts,
       'ledGrn': Grn_Sts,
    }
-   return render_template('index.html', **templateData)
+   return render_template('main.html', **templateData)
 
 
 @app.route("/<deviceName>/<action>")
@@ -41,11 +60,11 @@ def action(deviceName, action):
       led = Grn
 
    if action == "on":
-      relay_control.on(relay)
-      led_control.on(led)
+      GPIO.output(relay, GPIO.HIGH)
+      GPIO.output(led, GPIO.HIGH)
    if action == "off":
-      relay_control.off(relay)
-      led_control.off(led)
+      GPIO.output(relay, GPIO.LOW)
+      GPIO.output(led, GPIO.LOW)
 
    R1_Sts = GPIO.input(R1)
    R2_Sts = GPIO.input(R2)
@@ -58,7 +77,7 @@ def action(deviceName, action):
       'ledRed': Red_Sts,
       'ledGrn': Grn_Sts,
    }
-   return render_template('index.html', **templateData)
+   return render_template('main.html', **templateData)
 
 @app.route("/display/<Line1>/<Line2>")
 def display(Line1, Line2):

@@ -14,18 +14,26 @@
     <h1>RPi Web Server</h1>
     <p>Relays:</p>
     <div class="row">
-        Relay 1 ==>  {{ Relay_1  }}  ==>
+        <div class="col">
+            <div class="badge badge-primary">
+            Relay 1 ==>  {{ Relay_1  }}  ==>
 			{% if  Relay_1   == 1 %}
-				<a href="/Relay_1/off"class="button">TURN OFF</a>
+				<a href="/Relay_1/off"class="btn btn-success">TURN OFF</a>
 			{% else %}
-				<a href="/Relay_1/on" class="button">TURN ON</a>
+				<a href="/Relay_1/on" class="btn btn-danger">TURN ON</a>
 			{% endif %}
-		Relay 2 ==>  {{ Relay_2  }}  ==>
+            </div>
+        </div>
+		<div class="col">
+            <div class="badge badge-primary">
+            Relay 2 ==>  {{ Relay_2  }}  ==>
 			{% if  Relay_2   == 1 %}
-				<a href="/Relay_2/off"class="button">TURN OFF</a>
+				<a href="/Relay_2/off"class="btn btn-success">TURN OFF</a>
 			{% else %}
-				<a href="/Relay_2/on" class="button">TURN ON</a>
-			{% endif %}
+				<a href="/Relay_2/on" class="btn btn-danger">TURN ON</a>
+            {% endif %}
+            </div>
+        </div>
       <div class="w-100"></div>
       <div class="col">Diode 1
           {% if  ledRed   == 1 %}
