@@ -12,12 +12,13 @@
 </head>
 
 <body>
-    <h1>RPi Web Server</h1>
+    <a href="{{ url_for('main') }}" type="button" class="btn btn-link"><h1>RPi Web Server</h1></a>
+
     <p>Relays:</p>
     <div class="row">
         <div class="col">
             <div class="badge badge-primary">
-            Relay 1 ==>  {{ Relay_1  }}  ==>
+            Relay 1  =  {{ Relay_1  }}  >
 			{% if  Relay_1   == 1 %}
 				<a href="/Relay_1/off"class="btn btn-success">TURN OFF</a>
 			{% else %}
@@ -27,7 +28,7 @@
         </div>
 		<div class="col">
             <div class="badge badge-primary">
-            Relay 2 ==>  {{ Relay_2  }}  ==>
+            Relay 2  =  {{ Relay_2  }}  >
 			{% if  Relay_2   == 1 %}
 				<a href="/Relay_2/off"class="btn btn-success">TURN OFF</a>
 			{% else %}
@@ -35,15 +36,30 @@
             {% endif %}
             </div>
         </div>
+
       <div class="w-100"></div>
       <div class="col">Diode 1
-          {% if  ledRed   == 1 %}
+          {% if  led1   == 1 %}
                 <span class="dot_red"></span> </div>
           {% else %}
                 <span class="dot_grey"></span> </div>
           {% endif %}
       <div class="col">Diode 2
-          {% if  ledGrn   == 1 %}
+          {% if  led2   == 1 %}
+                <span class="dot_red"></span> </div>
+          {% else %}
+                <span class="dot_grey"></span> </div>
+          {% endif %}
+
+      <div class="w-100"></div>
+      <div class="col">Button 1
+          {% if  b1   == 1 %}
+                <span class="dot_green"></span> </div>
+          {% else %}
+                <span class="dot_grey"></span> </div>
+          {% endif %}
+      <div class="col">Button 2
+          {% if  b2   == 1 %}
                 <span class="dot_green"></span> </div>
           {% else %}
                 <span class="dot_grey"></span> </div>
@@ -57,26 +73,27 @@
             <input type="text" class="form-control" id="L1" name="L1">
             <label for="Line2">Line 2</label>
             <input type="text" class="form-control" id="L2" name="L2">
-            <input type="submit" value="Send to display">
+            <input type="submit" class="btn btn-success" value="Send to display">
+            <a href="{{ url_for('disp_clear') }}" type="button" class="btn btn-danger">Clear display</a>
         </form>
     <br>
 
     <p>DHT11:</p>
     <div class="row">
       <div class="w-100"></div>
-         <div class="col">Temperature [C/F]:
+         <div class="col">Temperature [C/F]: {{temp_c}}°C / {{temp_f}}°F
             <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="50" aria-valuemin="-40" aria-valuemax="125">25%</div>
+            <div class="progress-bar" role="progressbar" style="width: {{prog_C}}%;">{{temp_c}}°C</div>
             </div>
          </div>
-        <div class="col">Humidity [%]:
+        <div class="col">Humidity [%]: {{hum}}%
             <div class="progress">
-            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+            <div class="progress-bar" role="progressbar" style="width: {{hum}}%;">{{hum}}%</div>
             </div>
         </div>
     </div>
     <form id="dht" action="/dht" method="POST">
-            <input type="submit" value="Refresh">
+            <input type="submit" class="btn btn-success" value="Refresh">
         </form>
     <br>
 

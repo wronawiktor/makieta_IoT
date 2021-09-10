@@ -12,26 +12,33 @@ GPIO.setwarnings(False)
 
 R1 = 26
 R2 = 19
-Red = 5
-Grn = 6
+L1 = 5
+L2 = 6
+B1 = 21
+B2 = 20
 
 GPIO.setup(R1, GPIO.OUT)
 GPIO.setup(R2, GPIO.OUT)
-GPIO.setup(Red, GPIO.OUT)
-GPIO.setup(Grn, GPIO.OUT)
+GPIO.setup(L1, GPIO.OUT)
+GPIO.setup(L2, GPIO.OUT)
+GPIO.setup(B1, GPIO.IN)
+GPIO.setup(B2, GPIO.IN)
 
 R1_Sts = 0
 R2_Sts = 0
-Red_Sts = 0
-Grn_Sts = 0
+L1_Sts = 0
+L2_Sts = 0
+B1_Sts = 0
+B2_Sts = 0
 temperature_C = 0
 temperature_F = 0
 humidity = 0
+progress_temp = 0
 
 GPIO.output(R1, GPIO.LOW)
 GPIO.output(R2, GPIO.LOW)
-GPIO.output(Red, GPIO.LOW)
-GPIO.output(Grn, GPIO.LOW)
+GPIO.output(L1, GPIO.LOW)
+GPIO.output(L2, GPIO.LOW)
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -39,18 +46,23 @@ def main():
    # Read GPIO Status
    R1_Sts = GPIO.input(R1)
    R2_Sts = GPIO.input(R2)
-   Red_Sts = GPIO.input(Red)
-   Grn_Sts = GPIO.input(Grn)
+   L1_Sts = GPIO.input(L1)
+   L2_Sts = GPIO.input(L2)
+   B1_Sts = GPIO.input(B1)
+   B2_Sts = GPIO.input(B2)
 
 # First html, second python
    templateData = {
       'Relay_1': R1_Sts,
       'Relay_2': R2_Sts,
-      'ledRed': Red_Sts,
-      'ledGrn': Grn_Sts,
+      'led1': L1_Sts,
+      'led2': L2_Sts,
       'temp_c': temperature_C,
       'temp_f': temperature_F,
+      'prog_C': progress_temp,
       'hum': humidity,
+      'b1': B1_Sts,
+      'b2': B2_Sts,
    }
    return render_template('main.html', **templateData)
 
@@ -59,10 +71,10 @@ def main():
 def action(deviceName, action):
    if deviceName == 'Relay_1':
       relay = R1
-      led = Red
+      led = L1
    if deviceName == 'Relay_2':
       relay = R2
-      led = Grn
+      led = L2
 
    if action == "on":
       GPIO.output(relay, GPIO.HIGH)
@@ -71,68 +83,47 @@ def action(deviceName, action):
       GPIO.output(relay, GPIO.LOW)
       GPIO.output(led, GPIO.LOW)
 
-   R1_Sts = GPIO.input(R1)
-   R2_Sts = GPIO.input(R2)
-   Red_Sts = GPIO.input(Red)
-   Grn_Sts = GPIO.input(Grn)
-
-   templateData = {
-      'Relay_1': R1_Sts,
-      'Relay_2': R2_Sts,
-      'ledRed': Red_Sts,
-      'ledGrn': Grn_Sts,
-      'temp_c': temperature_C,
-      'temp_f': temperature_F,
-      'hum': humidity,
-   }
-   return render_template('main.html', **templateData)
+#   return render_template('main.html', **templateData)
+   return redirect(url_for('main'))
 
 
-@app.route("/display", method=['POST'])
+@app.route("/display", methods=['POST'])
 def display():
    display = drivers.Lcd()
    display.lcd_clear()
 
    Line1="No data"
-   if Line1 in request.form:
-      Line1 = request.form["1"]
+   if "L1" in request.form:
+      Line1 = request.form["L1"]
    Line2 = "No data"
-   if Line2 in request.form:
+   if "L2" in request.form:
       Line2 = request.form["L2"]
 
    display.lcd_display_string("{}".format(Line1), 1)
    display.lcd_display_string("{}".format(Line2), 2)
 
-   templateData = {
-      'Relay_1': R1_Sts,
-      'Relay_2': R2_Sts,
-      'ledRed': Red_Sts,
-      'ledGrn': Grn_Sts,
-      'temp_c': temperature_C,
-      'temp_f': temperature_F,
-      'hum': humidity,
-   }
-
-   return render_template('main.html', **templateData)
+   return redirect(url_for('main'))
 
 
-@app.route("/dht", method=['POST'])
-def display():
+@app.route("/dht", methods=['POST'])
+def dht():
+   global humidity
+   global temperature_C
+   global temperature_F
+   global progress_temp
 
    humidity, temperature_C = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 13)
    temperature_F = temperature_C * (9 / 5) + 32
+   progress_temp = temperature_C * 2
 
-   templateData = {
-      'Relay_1': R1_Sts,
-      'Relay_2': R2_Sts,
-      'ledRed': Red_Sts,
-      'ledGrn': Grn_Sts,
-      'temp_c': temperature_C,
-      'temp_f': temperature_F,
-      'hum': humidity,
-   }
+   return redirect(url_for('main'))
 
-   return render_template('main.html', **templateData)
+@app.route("/disp_clear")
+def disp_clear():
+   display = drivers.Lcd()
+   display.lcd_clear()
+
+   return redirect(url_for('main'))
 
 
 if __name__ == "__main__":
