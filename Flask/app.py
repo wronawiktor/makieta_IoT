@@ -1,11 +1,10 @@
 
 from flask import Flask, render_template, request, url_for, redirect
 import RPi.GPIO as GPIO
+import Adafruit_DHT
 app = Flask(__name__)
 import sys
 sys.path.insert(1, '/home/pi/makieta_IoT')
-from relays import relay_control
-from led import led_control
 from lcd import drivers
 
 GPIO.setmode(GPIO.BCM)
@@ -25,6 +24,9 @@ R1_Sts = 0
 R2_Sts = 0
 Red_Sts = 0
 Grn_Sts = 0
+temperature_C = 0
+temperature_F = 0
+humidity = 0
 
 GPIO.output(R1, GPIO.LOW)
 GPIO.output(R2, GPIO.LOW)
@@ -46,6 +48,9 @@ def main():
       'Relay_2': R2_Sts,
       'ledRed': Red_Sts,
       'ledGrn': Grn_Sts,
+      'temp_c': temperature_C,
+      'temp_f': temperature_F,
+      'hum': humidity,
    }
    return render_template('main.html', **templateData)
 
@@ -76,22 +81,59 @@ def action(deviceName, action):
       'Relay_2': R2_Sts,
       'ledRed': Red_Sts,
       'ledGrn': Grn_Sts,
+      'temp_c': temperature_C,
+      'temp_f': temperature_F,
+      'hum': humidity,
    }
    return render_template('main.html', **templateData)
 
-@app.route("/display/<Line1>/<Line2>")
-def display(Line1, Line2):
+
+@app.route("/display", method=['POST'])
+def display():
    display = drivers.Lcd()
    display.lcd_clear()
-   '''
+
    Line1="No data"
    if Line1 in request.form:
-      Line1 = request.form["Line1"]
-   '''
+      Line1 = request.form["1"]
+   Line2 = "No data"
+   if Line2 in request.form:
+      Line2 = request.form["L2"]
+
    display.lcd_display_string("{}".format(Line1), 1)
    display.lcd_display_string("{}".format(Line2), 2)
 
-   return render_template('main.html')
+   templateData = {
+      'Relay_1': R1_Sts,
+      'Relay_2': R2_Sts,
+      'ledRed': Red_Sts,
+      'ledGrn': Grn_Sts,
+      'temp_c': temperature_C,
+      'temp_f': temperature_F,
+      'hum': humidity,
+   }
+
+   return render_template('main.html', **templateData)
+
+
+@app.route("/dht", method=['POST'])
+def display():
+
+   humidity, temperature_C = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 13)
+   temperature_F = temperature_C * (9 / 5) + 32
+
+   templateData = {
+      'Relay_1': R1_Sts,
+      'Relay_2': R2_Sts,
+      'ledRed': Red_Sts,
+      'ledGrn': Grn_Sts,
+      'temp_c': temperature_C,
+      'temp_f': temperature_F,
+      'hum': humidity,
+   }
+
+   return render_template('main.html', **templateData)
+
 
 if __name__ == "__main__":
    app.run(host='0.0.0.0', port=5000, debug=True)
