@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, url_for, redirect
 import RPi.GPIO as GPIO
 import Adafruit_DHT
+from camera_pi import Camera
 app = Flask(__name__)
 import sys
 sys.path.insert(1, '/home/pi/makieta_IoT')
@@ -41,6 +42,14 @@ GPIO.output(L1, GPIO.LOW)
 GPIO.output(L2, GPIO.LOW)
 
 
+def gen(camera):
+   """Video streaming generator function."""
+   while True:
+      frame = camera.get_frame()
+      yield (b'--frame\r\n'
+             b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
 @app.route("/", methods=['GET', 'POST'])
 def main():
    # Read GPIO Status
@@ -64,6 +73,14 @@ def main():
       'b1': B1_Sts,
       'b2': B2_Sts,
    }
+
+   def gen(camera):
+      """Video streaming generator function."""
+      while True:
+         frame = camera.get_frame()
+         yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
    return render_template('main.html', **templateData)
 
 
