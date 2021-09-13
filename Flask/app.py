@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, Response
 import RPi.GPIO as GPIO
 import Adafruit_DHT
 from camera_pi import Camera
@@ -135,12 +135,20 @@ def dht():
 
    return redirect(url_for('main'))
 
+
 @app.route("/disp_clear")
 def disp_clear():
    display = drivers.Lcd()
    display.lcd_clear()
 
    return redirect(url_for('main'))
+
+
+@app.route('/video_feed')
+def video_feed():
+    """Video streaming route. Put this in the src attribute of an img tag."""
+    return Response(gen(Camera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 if __name__ == "__main__":
